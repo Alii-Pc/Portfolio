@@ -1,0 +1,154 @@
+@import "tailwindcss";
+
+@theme {
+  /* Color tokens — from brief */
+  --color-bg: #0B0F19;
+  --color-surface: #131826;
+  --color-surface-2: #1A2133;
+  --color-border: #232B40;
+  --color-primary: #7C3AED;
+  --color-primary-soft: #A78BFA;
+  --color-secondary: #06B6D4;
+  --color-secondary-soft: #67E8F9;
+  --color-text: #F4F6FB;
+  --color-text-muted: #8B93A7;
+
+  --font-display: "Space Grotesk", "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --animate-blink: blink 1s steps(2) infinite;
+  --animate-drift: drift 8s ease-in-out infinite;
+  --animate-scan: scan 2.4s ease-in-out infinite;
+}
+
+@keyframes blink {
+  to { opacity: 0; }
+}
+@keyframes drift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --color-bg: #F6F7FB;
+  --color-surface: #FFFFFF;
+  --color-surface-2: #EEF0F7;
+  --color-border: #DDE1ED;
+  --color-text: #0B0F19;
+  --color-text-muted: #5B6478;
+  color-scheme: light;
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  transition: background-color 0.4s ease, color 0.4s ease;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-primary);
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-primary), var(--color-secondary));
+  border-radius: 8px;
+}
+
+.glass {
+  background: color-mix(in srgb, var(--color-surface) 60%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border);
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--color-secondary-soft), var(--color-primary-soft));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.signal-line {
+  background: linear-gradient(180deg, transparent, var(--color-secondary), var(--color-primary), transparent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 3px;
+}
+
+/* Certifications marquee */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee 32s linear infinite;
+}
+.marquee-track.paused {
+  animation-play-state: paused;
+}
+
+/* Experience timeline traveling pulse */
+@keyframes pulse-down {
+  0% { top: 0%; opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+.pulse-dot {
+  position: absolute;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  background: var(--color-secondary-soft);
+  box-shadow: 0 0 8px 2px color-mix(in srgb, var(--color-secondary) 70%, transparent);
+  animation: pulse-down 3.4s linear infinite;
+}
+
+/* Soft ambient background glow used to break up flat section backgrounds */
+.ambient-glow {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 999px;
+  filter: blur(60px);
+  opacity: 0.25;
+  z-index: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
