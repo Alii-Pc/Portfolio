@@ -14,6 +14,8 @@ export default function Contact() {
   const [form, setForm] = useState<FormState>(initialForm);
   const [errors, setErrors] = useState<Errors>({});
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   function validate(values: FormState): Errors {
     const next: Errors = {};
@@ -25,17 +27,40 @@ export default function Contact() {
     return next;
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setErrorMessage(null);
+    setSent(false);
+
     const validationErrors = validate(form);
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
 
-    // TODO: wire this up to a real backend or a form service
-    // (e.g. Formspree, EmailJS, or your own API route) to actually send messages.
-    setSent(true);
-    setForm(initialForm);
-    setTimeout(() => setSent(false), 4000);
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:5000/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+      setLoading(false);
+
+      if (res.ok) {
+        setSent(true);
+        setForm(initialForm);
+        setTimeout(() => setSent(false), 5000);
+      } else {
+        setErrorMessage(data.message || "Failed to send message. Please try again.");
+      }
+    } catch (err) {
+      setLoading(false);
+      console.error(err);
+      setErrorMessage("Network error: Could not connect to the server. Please verify the backend is running.");
+    }
   }
 
   function update<K extends keyof FormState>(key: K, value: string) {
@@ -63,11 +88,18 @@ export default function Contact() {
           onSubmit={handleSubmit}
           className="glass relative rounded-2xl p-8"
         >
+          {errorMessage && (
+            <div className="mb-4 rounded-lg bg-red-500/10 p-3 text-xs text-red-400 border border-red-500/20">
+              {errorMessage}
+            </div>
+          )}
+
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Name" error={errors.name}>
               <input
                 value={form.name}
                 onChange={(e) => update("name", e.target.value)}
+                disabled={loading}
                 className="w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm outline-none"
                 style={{ borderColor: errors.name ? "#EF4444" : "var(--color-border)", color: "var(--color-text)" }}
                 placeholder="Your name"
@@ -77,6 +109,7 @@ export default function Contact() {
               <input
                 value={form.email}
                 onChange={(e) => update("email", e.target.value)}
+                disabled={loading}
                 className="w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm outline-none"
                 style={{ borderColor: errors.email ? "#EF4444" : "var(--color-border)", color: "var(--color-text)" }}
                 placeholder="you@example.com"
@@ -89,6 +122,7 @@ export default function Contact() {
               <input
                 value={form.subject}
                 onChange={(e) => update("subject", e.target.value)}
+                disabled={loading}
                 className="w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm outline-none"
                 style={{ borderColor: errors.subject ? "#EF4444" : "var(--color-border)", color: "var(--color-text)" }}
                 placeholder="What's this about?"
@@ -101,6 +135,7 @@ export default function Contact() {
               <textarea
                 value={form.message}
                 onChange={(e) => update("message", e.target.value)}
+                disabled={loading}
                 rows={5}
                 className="w-full rounded-lg border bg-transparent px-4 py-2.5 text-sm outline-none"
                 style={{ borderColor: errors.message ? "#EF4444" : "var(--color-border)", color: "var(--color-text)" }}
@@ -111,10 +146,15 @@ export default function Contact() {
 
           <button
             type="submit"
-            className="mt-6 w-full rounded-full px-6 py-3 text-sm font-medium text-white sm:w-auto"
+            disabled={loading}
+            className="mt-6 flex w-full items-center justify-center rounded-full px-6 py-3 text-sm font-medium text-white sm:w-auto cursor-pointer disabled:opacity-50"
             style={{ background: "linear-gradient(90deg, var(--color-primary), var(--color-secondary))" }}
           >
-            Send Message
+            {loading ? (
+              <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+            ) : (
+              "Send Message"
+            )}
           </button>
 
           <AnimatePresence>
