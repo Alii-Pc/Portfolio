@@ -4,6 +4,7 @@ import { FiMail, FiPhone, FiGithub, FiLinkedin, FiCheck } from "react-icons/fi";
 import SectionHeading from "./SectionHeading";
 import AmbientGlow from "./AmbientGlow";
 import { profile } from "../data/content";
+import { API_URL } from "../context/AuthContext";
 
 type FormState = { name: string; email: string; subject: string; message: string };
 type Errors = Partial<FormState>;
@@ -38,7 +39,7 @@ export default function Contact() {
 
     setLoading(true);
     try {
-      const res = await fetch("https://portfolio-nine-mu-t1un059vgu.vercel.app/api/contact", {
+      const res = await fetch(`${API_URL}/contact`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

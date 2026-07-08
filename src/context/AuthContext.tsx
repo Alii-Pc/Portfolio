@@ -24,7 +24,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_URL = "https://portfolio-nine-mu-t1un059vgu.vercel.app/api";
+export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
