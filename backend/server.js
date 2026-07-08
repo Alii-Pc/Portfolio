@@ -20,6 +20,18 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Database connection middleware for Serverless environments (Vercel)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error("Database connection middleware error:", err.message);
+    res.status(500).json({ message: "Database connection failed. Please try again." });
+  }
+});
+
+
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/contact", contactRoutes);

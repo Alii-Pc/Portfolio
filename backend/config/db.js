@@ -15,7 +15,7 @@ const connectDB = async () => {
 
   if (!cached.promise) {
     const opts = {
-      bufferCommands: false,
+      bufferCommands: true,
       maxPoolSize: 10, // Prevents Vercel from exhausting MongoDB connections
     };
 
