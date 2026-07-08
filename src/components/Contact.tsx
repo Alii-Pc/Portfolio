@@ -38,7 +38,7 @@ export default function Contact() {
 
     setLoading(true);
     try {
-      const res = await fetch("https://portfolio-bay-eight-90.vercel.app/api/contact", {
+      const res = await fetch("https://portfolio-nine-mu-t1un059vgu.vercel.app/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
